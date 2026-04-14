@@ -1,0 +1,9 @@
+module.exports = {
+  apps: [
+    {
+      name: "socketio-rejeki-masjid",
+      script: "server.js",
+      env: { NODE_ENV: "production", PORT: 9299 },
+    },
+  ],
+};
