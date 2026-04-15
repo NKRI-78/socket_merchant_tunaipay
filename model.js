@@ -1,4 +1,4 @@
-const conn = require('./config');
+const { conn } = require('./config');
 
 module.exports = {
   ensureTables: async () => {
