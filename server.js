@@ -6,7 +6,7 @@ const socketIo = require('socket.io');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 
-const { setTransactionStatus, ensureTables } = require('./model');
+const { setTransactionStatus, ensureTables, findTransactionByReference } = require('./model');
 
 const app = express();
 const server = http.createServer(app);
@@ -54,12 +54,26 @@ app.post('/api/v1/payment/qris/webhook', async (req, res) => {
     const reference_id = pick(body, ['reference_id', 'data.reference_id']);
     if (!reference_id) return misc.response(res, 400, true, 'reference_id is required');
 
-    const exists = await QrisPayment.findTransactionByReference(reference_id);
+    const exists = await findTransactionByReference(reference_id);
     if (!exists) return misc.response(res, 404, true, 'transaction not found');
+
+    const userId = exists.created_by;
 
     const incomingStatus = String(
       pick(body, ['status', 'data.status'], exists.status) || exists.status,
     ).toUpperCase();
+
+    if (userId && connectedUsers[userId]) {
+      const socketId = connectedUsers[userId];
+      io.to(socketId).emit('payment-update', {
+        order_id: reference_id,
+        status: incomingStatus,
+        user_id: userId,
+      });
+      console.log(`Sent update to user ${userId}`);
+    } else {
+      console.log('User not connected or user_id missing');
+    }
 
     await setTransactionStatus({
       reference_id,
