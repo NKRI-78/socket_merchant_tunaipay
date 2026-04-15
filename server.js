@@ -7,6 +7,7 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 
 const { setTransactionStatus, ensureTables, findTransactionByReference } = require('./model');
+const { response } = require('./response');
 
 const app = express();
 const server = http.createServer(app);
@@ -52,10 +53,10 @@ app.post('/api/v1/payment/qris/webhook', async (req, res) => {
     const body = req.body || {};
 
     const reference_id = pick(body, ['reference_id', 'data.reference_id']);
-    if (!reference_id) return misc.response(res, 400, true, 'reference_id is required');
+    if (!reference_id) response(res, 400, true, 'reference_id is required');
 
     const exists = await findTransactionByReference(reference_id);
-    if (!exists) return misc.response(res, 404, true, 'transaction not found');
+    if (!exists) response(res, 404, true, 'transaction not found');
 
     const userId = exists.created_by;
 
@@ -81,9 +82,9 @@ app.post('/api/v1/payment/qris/webhook', async (req, res) => {
       provider_response: JSON.stringify(body),
     });
 
-    return misc.response(res, 200, false, 'OK', { reference_id, status: incomingStatus });
+    return response(res, 200, false, 'OK', { reference_id, status: incomingStatus });
   } catch (e) {
-    return misc.response(res, 400, true, e.message);
+    return response(res, 400, true, e.message);
   }
 });
 
