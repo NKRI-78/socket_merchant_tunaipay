@@ -210,7 +210,7 @@ module.exports = {
     new Promise((resolve, reject) => {
       conn.query(
         `UPDATE merchant_qris_transactions
-         SET status = ?, provider_response = ?, paid_at = 'NOW()'
+         SET status = ?, provider_response = ?, paid_at = NOW()
          WHERE reference_id = ?`,
         [status, provider_response, reference_id],
         (e, result) =>
