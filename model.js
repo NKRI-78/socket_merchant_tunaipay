@@ -1,6 +1,16 @@
 const { conn } = require('./config');
 
 module.exports = {
+  pick(obj, paths = [], fallback = null) {
+    for (const p of paths) {
+      const val = p
+        .split('.')
+        .reduce((acc, k) => (acc && acc[k] !== undefined ? acc[k] : undefined), obj);
+      if (val !== undefined && val !== null) return val;
+    }
+    return fallback;
+  },
+
   ensureTables: async () => {
     const ddls = [
       `CREATE TABLE IF NOT EXISTS merchant_qris_categories (

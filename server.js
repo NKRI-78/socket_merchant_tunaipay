@@ -6,7 +6,7 @@ const socketIo = require('socket.io');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 
-const { setTransactionStatus, ensureTables, findTransactionByReference } = require('./model');
+const { setTransactionStatus, ensureTables, findTransactionByReference, pick } = require('./model');
 const { response } = require('./response');
 
 const app = express();
