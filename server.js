@@ -79,7 +79,6 @@ app.post('/api/v1/payment/qris/webhook', async (req, res) => {
     await setTransactionStatus({
       reference_id,
       status: body.status,
-      provider_response: JSON.stringify(body),
     });
 
     return response(res, 200, false, 'OK', { reference_id, status: incomingStatus });
